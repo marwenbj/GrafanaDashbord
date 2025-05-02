@@ -32,7 +32,7 @@ def upload_results(output, run, project, version):
 
     # Set up DB connection
     engine = create_engine(
-        "postgresql://postgres:robotframework@localhost:5432/robotframework_json"
+        "postgresql://postgres:0000@localhost:5432/postgres"
     )
 
     result = ExecutionResult(output)
