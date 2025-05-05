@@ -1,0 +1,52 @@
+version: '3.8'
+ 
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    networks:
+      - robot
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: robotframework
+      POSTGRES_DB: robotframework_json
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./postgresql-data:/var/lib/postgresql/data
+      - ./docker/postgres_scripts:/docker-entrypoint-initdb.d
+ 
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    networks:
+      - robot
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: robocon
+      GF_DATABASE_TYPE: postgres
+      GF_DATABASE_HOST: postgres:5432
+      GF_DATABASE_NAME: robotframework_json
+      GF_DATABASE_USER: postgres
+      GF_DATABASE_PASSWORD: robotframework
+    volumes:
+      - ./grafana-data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards
+ 
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    networks:
+      - robot
+    ports:
+      - "8081:8080"
+ 
+networks:
+  robot:
+    driver: bridge
